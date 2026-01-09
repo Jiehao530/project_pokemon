@@ -1,9 +1,16 @@
 import os
 import sys
 sys.path.insert(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from services.database import users_collection
+from services.database import users_collection, token_collection
 from models.users_model import User
 from schemes.users_schemes import user_scheme
+from datetime import datetime, timedelta
+from jose import jwt
+from bson import ObjectId
+
+TOKEN_DURATION = timedelta(days=1)
+SECRET = "e3f1a8b7c9d6e4f2a1b0c3d5e7f8a9b6c4d2e0f1a3b5c7d9e6f4a2b0c1d3e5f7"
+ALGORITHM = "HS256"
 
 async def search_user(field: str, value):
     user = users_collection.find_one({field: value})
@@ -11,3 +18,24 @@ async def search_user(field: str, value):
         return User(**user_scheme(user))
     else:
         return None
+
+async def delete_existing_token(data_user: User):
+    search_token = await token_collection.delete_one({"user_id": ObjectId(data_user.id)})
+    if search_token.deleted_count == 0:
+        pass
+
+async def get_token(data_user: User):
+    data_token = {
+        "sub": data_user.username,
+        "exp": datetime.utcnow() + TOKEN_DURATION
+    }
+    token = jwt.encode(data_token, SECRET, ALGORITHM)
+    await token_collection.insert_one({
+        "user_id": ObjectId(data_user.id),
+        "username": data_user.username,
+        "token": token,
+        "created_at": datetime.utcnow()
+    })
+    return token
+    
+    

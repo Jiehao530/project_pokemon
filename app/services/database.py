@@ -9,3 +9,4 @@ MONGO_CONNECTION = os.getenv("MONGO_URI")
 
 client = AsyncIOMotorClient()["pokemon_project"]
 users_collection = client["users"]
+token_collection = client["token"]
