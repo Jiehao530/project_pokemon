@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from fastapi import APIRouter, status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from models.users_model import NewUser, User
+from models.users_model import NewUser, User, UpdateUser
 from schemes.users_scheme import user_visual_scheme
 from helpers.users_helper import search_user, delete_existing_token, get_token, verify_token, existing_username, id_matching
 from datetime import datetime
@@ -51,5 +51,29 @@ async def sign_in_user(username_and_password: OAuth2PasswordRequestForm = Depend
 async def get_user(username: str, user: User = Depends(verify_token)):
     search_username = await existing_username(username)
     await id_matching(search_username.id, user.id)
-    
+
     return user_visual_scheme(user.model_dump())
+
+@router.patch("/user/{username}", status_code=status.HTTP_202_ACCEPTED)
+@router.patch("/user/", status_code=status.HTTP_202_ACCEPTED)
+async def update_user(username: str, new_data: UpdateUser, user: User = Depends(verify_token)):
+    search_username = await existing_username(username)
+    await id_matching(search_username.id, user.id)
+
+    new_data_dict = new_data.model_dump()
+    if new_data.email:
+        new_data_email = await search_user("email", new_data.email)
+        if isinstance(new_data_email, User):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This email is already in use")
+    if new_data.username:
+        new_data_username = await search_user("username", new_data.username)
+        if isinstance(new_data_username, User):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This username is already in use")
+    if new_data.password:
+        hash_password = crypt.hash(new_data.password)
+        new_data_dict["password"] = hash_password
+
+    update = await users_collection.update_one({"_id", ObjectId(user.id)}, {"$set": new_data_dict})
+    if update.modified_count == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Update Error")
+    return {"detail": "The user has been update successfully"}
