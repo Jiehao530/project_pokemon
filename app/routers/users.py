@@ -4,7 +4,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from fastapi import APIRouter, status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from models.users_model import NewUser, User
-from helpers.users_helper import search_user, delete_existing_token, get_token
+from schemes.users_scheme import user_visual_scheme
+from helpers.users_helper import search_user, delete_existing_token, get_token, verify_token, existing_username, id_matching
 from datetime import datetime
 from services.database import users_collection
 from passlib.context import CryptContext
@@ -44,3 +45,11 @@ async def sign_in_user(username_and_password: OAuth2PasswordRequestForm = Depend
     token = await get_token(user)
     await users_collection.update_one({"_id": ObjectId(user.id)}, {"$set": {"last_login": datetime.utcnow()}})
     return {"token_type": "Bearer", "token": token}
+
+@router.get("/user/{username}", status_code=status.HTTP_202_ACCEPTED)
+@router.get("/user/", status_code=status.HTTP_202_ACCEPTED)
+async def get_user(username: str, user: User = Depends(verify_token)):
+    search_username = await existing_username(username)
+    await id_matching(search_username.id, user.id)
+    
+    return user_visual_scheme(user.model_dump())

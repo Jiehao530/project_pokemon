@@ -1,9 +1,11 @@
 import os
 import sys
 sys.path.insert(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from services.database import users_collection, token_collection
 from models.users_model import User
-from schemes.users_schemes import user_scheme
+from schemes.users_scheme import user_scheme
 from datetime import datetime, timedelta
 from jose import jwt
 from bson import ObjectId
@@ -11,6 +13,7 @@ from bson import ObjectId
 TOKEN_DURATION = timedelta(days=1)
 SECRET = "e3f1a8b7c9d6e4f2a1b0c3d5e7f8a9b6c4d2e0f1a3b5c7d9e6f4a2b0c1d3e5f7"
 ALGORITHM = "HS256"
+OAuth2 = OAuth2PasswordBearer(tokenUrl="/signin")
 
 async def search_user(field: str, value):
     user = users_collection.find_one({field: value})
@@ -38,4 +41,29 @@ async def get_token(data_user: User):
     })
     return token
     
-    
+async def verify_token(token: str = Depends(OAuth2)):
+    data_token = jwt.decode(token, SECRET, ALGORITHM)
+    if not data_token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is incorrect")
+    expire = data_token.get("exp")
+    if not expire:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is incorrect")
+    if datetime.fromtimestamp(expire) < datetime.utcnow():
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token has expired")
+    username = data_token.get("sub")
+    if not username:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is incorrect")
+    user = await search_user("username", username)
+    if not isinstance(user, User):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is incorrect")
+    return user
+
+async def existing_username(username: str):
+    user = await search_user("username", username)
+    if not isinstance(user, User):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return user
+
+async def id_matching(username_id, user_id):
+    if username_id != user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You don’t have permission to access this user")
