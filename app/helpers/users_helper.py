@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.insert(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from services.database import users_collection, token_collection
@@ -16,7 +16,7 @@ ALGORITHM = "HS256"
 OAuth2 = OAuth2PasswordBearer(tokenUrl="/signin")
 
 async def search_user(field: str, value):
-    user = users_collection.find_one({field: value})
+    user = await users_collection.find_one({field: value})
     if user:
         return User(**user_scheme(user))
     else:

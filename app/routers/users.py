@@ -62,18 +62,18 @@ async def update_user(username: str, new_data: UpdateUser, user: User = Depends(
 
     new_data_dict = new_data.model_dump(exclude_unset=True)
     if new_data.email:
-        new_data_email = await users_collection.find_one({"email": new_data_email, "_id": {"$ne": ObjectId(user.id)}})
-        if isinstance(new_data_email, User):
+        search_email = await users_collection.find_one({"email": new_data.email, "_id": {"$ne": ObjectId(user.id)}})
+        if isinstance(search_email, User):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This email is already in use")
     if new_data.username:
-        new_data_username = await users_collection.find_one({"username": new_data_username, "_id": {"$ne": ObjectId(user.id)}})
-        if isinstance(new_data_username, User):
+        search_username = await users_collection.find_one({"username": new_data.username, "_id": {"$ne": ObjectId(user.id)}})
+        if isinstance(search_username, User):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This username is already in use")
     if new_data.password:
         hash_password = crypt.hash(new_data.password)
         new_data_dict["password"] = hash_password
 
-    update = await users_collection.update_one({"_id", ObjectId(user.id)}, {"$set": new_data_dict})
+    update = await users_collection.update_one({"_id": ObjectId(user.id)}, {"$set": new_data_dict})
     if update.modified_count == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Update Error")
     return {"detail": "The user has been update successfully"}
@@ -92,7 +92,7 @@ async def delete_user(username: str, user: User = Depends(verify_token)):
 
 @router.post("/logout", status_code=status.HTTP_202_ACCEPTED)
 async def log_out_user(user: User = Depends(verify_token)):
-    delete_token = await token_collection.delete_one({"_id": ObjectId(user.id)})
+    delete_token = await token_collection.delete_one({"user_id": ObjectId(user.id)})
     if delete_token.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Log Out Error")
     return {"detail": f"You have been successfully logged out"}

@@ -7,6 +7,6 @@ env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "
 load_dotenv(env_path)
 MONGO_CONNECTION = os.getenv("MONGO_URI")
 
-client = AsyncIOMotorClient()["pokemon_project"]
+client = AsyncIOMotorClient(MONGO_CONNECTION)["pokemon_project"]
 users_collection = client["users"]
-token_collection = client["token"]
+token_collection = client["tokens"]
