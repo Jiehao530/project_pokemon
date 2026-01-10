@@ -8,6 +8,7 @@ from models.users_model import User
 from schemes.users_scheme import user_scheme
 from datetime import datetime, timedelta
 from jose import jwt
+from jose.exceptions import ExpiredSignatureError, JWTError
 from bson import ObjectId
 
 TOKEN_DURATION = timedelta(days=1)
@@ -42,20 +43,18 @@ async def get_token(data_user: User):
     return token
     
 async def verify_token(token: str = Depends(OAuth2)):
-    data_token = jwt.decode(token, SECRET, ALGORITHM)
-    if not data_token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is incorrect")
-    expire = data_token.get("exp")
-    if not expire:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is incorrect")
-    if datetime.fromtimestamp(expire) < datetime.utcnow():
+    try:
+        data_token = jwt.decode(token, SECRET, ALGORITHM)
+    except ExpiredSignatureError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token has expired")
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is invalid")
+    
+    token_in_database = await token_collection.find_one({"token": token})
+    if not token_in_database:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is invalid")
     username = data_token.get("sub")
-    if not username:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is incorrect")
     user = await search_user("username", username)
-    if not isinstance(user, User):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is incorrect")
     return user
 
 async def existing_username(username: str):
