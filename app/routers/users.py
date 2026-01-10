@@ -14,6 +14,7 @@ from bson import ObjectId
 router = APIRouter(tags=["Users"])
 crypt = CryptContext(schemes=["bcrypt"])
 
+#Sign Up User source code
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def sign_up_user(new_user: NewUser):
     search_email = await search_user("email", new_user.email)
@@ -33,7 +34,8 @@ async def sign_up_user(new_user: NewUser):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error creating user")
     return {"detail": f"The user {new_user.username} has been created successfully"}
 
-@router.post("/signin", status_code=status.HTTP_202_ACCEPTED)
+#Sign In User source code
+@router.post("/signin", status_code=status.HTTP_202_ACCEPTED) 
 async def sign_in_user(username_and_password: OAuth2PasswordRequestForm = Depends()):
     user = await search_user("username", username_and_password.username)
     if not isinstance(user, User):
@@ -46,6 +48,7 @@ async def sign_in_user(username_and_password: OAuth2PasswordRequestForm = Depend
     await users_collection.update_one({"_id": ObjectId(user.id)}, {"$set": {"last_login": datetime.utcnow()}})
     return {"token_type": "Bearer", "token": token}
 
+#Get User source code
 @router.get("/user/{username}", status_code=status.HTTP_202_ACCEPTED)
 @router.get("/user/", status_code=status.HTTP_202_ACCEPTED)
 async def get_user(username: str, user: User = Depends(verify_token)):
@@ -54,6 +57,7 @@ async def get_user(username: str, user: User = Depends(verify_token)):
 
     return user_visual_scheme(user.model_dump())
 
+#Update User source code
 @router.patch("/user/{username}", status_code=status.HTTP_202_ACCEPTED)
 @router.patch("/user/", status_code=status.HTTP_202_ACCEPTED)
 async def update_user(username: str, new_data: UpdateUser, user: User = Depends(verify_token)):
@@ -78,6 +82,7 @@ async def update_user(username: str, new_data: UpdateUser, user: User = Depends(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Update Error")
     return {"detail": "The user has been update successfully"}
 
+#Delete User source code
 @router.delete("/user/{username}", status_code=status.HTTP_202_ACCEPTED)
 @router.delete("/user/", status_code=status.HTTP_202_ACCEPTED)
 async def delete_user(username: str, user: User = Depends(verify_token)):
@@ -90,6 +95,7 @@ async def delete_user(username: str, user: User = Depends(verify_token)):
     await token_collection.delete_one({"_id": ObjectId(user.id)})
     return {"detail": f"The user {username} has been deleted successfully"}
 
+#Log Out User source code
 @router.post("/logout", status_code=status.HTTP_202_ACCEPTED)
 async def log_out_user(user: User = Depends(verify_token)):
     delete_token = await token_collection.delete_one({"user_id": ObjectId(user.id)})
