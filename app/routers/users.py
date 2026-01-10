@@ -60,13 +60,13 @@ async def update_user(username: str, new_data: UpdateUser, user: User = Depends(
     search_username = await existing_username(username)
     await id_matching(search_username.id, user.id)
 
-    new_data_dict = new_data.model_dump()
+    new_data_dict = new_data.model_dump(exclude_unset=True)
     if new_data.email:
-        new_data_email = await search_user("email", new_data.email)
+        new_data_email = await users_collection.find_one({"email": new_data_email, "_id": {"$ne": ObjectId(user.id)}})
         if isinstance(new_data_email, User):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This email is already in use")
     if new_data.username:
-        new_data_username = await search_user("username", new_data.username)
+        new_data_username = await users_collection.find_one({"username": new_data_username, "_id": {"$ne": ObjectId(user.id)}})
         if isinstance(new_data_username, User):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This username is already in use")
     if new_data.password:
