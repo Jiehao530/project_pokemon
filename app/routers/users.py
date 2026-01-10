@@ -89,3 +89,10 @@ async def delete_user(username: str, user: User = Depends(verify_token)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Delete Error")
     await token_collection.delete_one({"_id": ObjectId(user.id)})
     return {"detail": f"The user {username} has been deleted successfully"}
+
+@router.post("/logout", status_code=status.HTTP_202_ACCEPTED)
+async def log_out_user(user: User = Depends(verify_token)):
+    delete_token = await token_collection.delete_one({"_id": ObjectId(user.id)})
+    if delete_token.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Log Out Error")
+    return {"detail": f"You have been successfully logged out"}
