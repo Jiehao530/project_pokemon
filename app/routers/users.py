@@ -7,7 +7,7 @@ from models.users_model import NewUser, User, UpdateUser
 from schemes.users_scheme import user_visual_scheme
 from helpers.users_helper import search_user, delete_existing_token, get_token, verify_token, existing_username, id_matching
 from datetime import datetime
-from services.database import users_collection
+from services.database import users_collection, token_collection
 from passlib.context import CryptContext
 from bson import ObjectId
 
@@ -77,3 +77,15 @@ async def update_user(username: str, new_data: UpdateUser, user: User = Depends(
     if update.modified_count == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Update Error")
     return {"detail": "The user has been update successfully"}
+
+@router.delete("/user/{username}", status_code=status.HTTP_202_ACCEPTED)
+@router.delete("/user/", status_code=status.HTTP_202_ACCEPTED)
+async def delete_user(username: str, user: User = Depends(verify_token)):
+    search_username = await existing_username(username)
+    await id_matching(search_username.id, user.id)
+
+    delete = await users_collection.delete_one({"_id": ObjectId(user.id)})
+    if delete.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Delete Error")
+    await token_collection.delete_one({"_id": ObjectId(user.id)})
+    return {"detail": f"The user {username} has been deleted successfully"}
