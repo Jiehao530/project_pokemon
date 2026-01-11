@@ -2,7 +2,9 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from fastapi import APIRouter, status, HTTPException, Depends
+from helpers.follow_helper import search_follow
 from helpers.users_helper import verify_token
+from models.follow_model import Follow
 from models.users_model import User
 from services.database import follow_collection
 from bson import ObjectId
@@ -11,6 +13,10 @@ router = APIRouter(tags=["follow"])
 
 @router.post("/profile/{followed_id}/follow", status_code=status.HTTP_202_ACCEPTED)
 async def follow_user(followed_id: str, user: User = Depends(verify_token)):
+    search = await search_follow("follower_id", ObjectId(user.id), "follower_id", ObjectId(followed_id))
+    if isinstance(search, Follow):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You are already following this user")
+    
     follow_data = {
         "follower_id": ObjectId(user.id),
         "followed_id": ObjectId(followed_id)
