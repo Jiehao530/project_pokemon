@@ -25,3 +25,14 @@ async def follow_user(followed_id: str, user: User = Depends(verify_token)):
     if not insert_follow_data.acknowledged:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Follow Error")
     return {"detail": f"Followed"}
+
+@router.delete("/profile/{unfollow_id}/unfollow", status_code=status.HTTP_202_ACCEPTED)
+async def unfollow_user(unfollow_id: str, user: User = Depends(verify_token)):
+    search = await search_follow("follower_id", ObjectId(user.id), "followed_id", ObjectId(unfollow_id))
+    if not isinstance(search, Follow):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You aren't following this user")
+
+    unfollow = await follow_collection.delete_one({"follower_id": ObjectId(user.id), "followed_id": ObjectId(unfollow_id)})
+    if unfollow.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unfollow Error")
+    return {"detail": f"Unfollowed"}
