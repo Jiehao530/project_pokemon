@@ -43,3 +43,10 @@ async def get_followers(user_id: str):
     if search is None:
         return []
     return [follower["follower_id"] for follower in search]
+
+@router.get("/profile/{user_id}/following", status_code=status.HTTP_202_ACCEPTED)
+async def get_following(user_id: str):
+    search = await search_follow("follower_id", ObjectId(user_id))
+    if search is None:
+        return []
+    return [following["followed_id"] for following in search]
