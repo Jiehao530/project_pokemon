@@ -16,3 +16,17 @@ async def search_follow(field: str, value):
     if not follow:
         return None
     return [follow_scheme(data) for data in follow]
+
+async def get_followers_numbers(user_id: str):
+    search = search_follow("followed_id", user_id)
+    if search is None:
+        return 0
+    followers_numbers = len(search)
+    return followers_numbers
+
+async def get_following_numbers(user_id: str):
+    search = search_follow("follower_id", user_id)
+    if search is None:
+        return 0
+    following_numbers = len(search)
+    return following_numbers
