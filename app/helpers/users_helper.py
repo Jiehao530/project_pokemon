@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from services.database import users_collection, token_collection
+from services.database import users_collection, token_collection, profile_collection
 from models.users_model import User
 from schemes.users_scheme import user_scheme
 from datetime import datetime, timedelta
@@ -66,3 +66,10 @@ async def existing_username(username: str):
 async def id_matching(username_id, user_id):
     if username_id != user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You don’t have permission to access this user")
+
+async def insert_other_data(user_id: str, username: str, created_date: datetime):
+    await profile_collection.insert_one({
+        "user_id": ObjectId(user_id),
+        "username": username,
+        "created_date": created_date
+    })

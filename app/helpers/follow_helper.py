@@ -4,6 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from services.database import follow_collection
 from models.follow_model import Follow
 from schemes.follow_scheme import follow_scheme
+from bson import ObjectId
 
 async def verify_follow(field: str, value, field_2: str, value_2):
     verify = await follow_collection.find_one({field: value, field_2: value_2})
@@ -18,14 +19,14 @@ async def search_follow(field: str, value):
     return [follow_scheme(data) for data in follow]
 
 async def get_followers_numbers(user_id: str):
-    search = search_follow("followed_id", user_id)
+    search = await search_follow("followed_id", ObjectId(user_id))
     if search is None:
         return 0
     followers_numbers = len(search)
     return followers_numbers
 
 async def get_following_numbers(user_id: str):
-    search = search_follow("follower_id", user_id)
+    search = await search_follow("follower_id", ObjectId(user_id))
     if search is None:
         return 0
     following_numbers = len(search)

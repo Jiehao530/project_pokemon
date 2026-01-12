@@ -6,7 +6,7 @@ from helpers.follow_helper import verify_follow, search_follow
 from helpers.users_helper import verify_token
 from models.follow_model import Follow
 from models.users_model import User
-from services.database import follow_collection, profile_collection, users_collection
+from services.database import follow_collection, profile_collection
 from bson import ObjectId
 
 router = APIRouter(tags=["follow"])
@@ -53,6 +53,6 @@ async def get_following(user_id: str):
     if search is None:
         return []
     following_id_list = [ObjectId(followed_id["followed_id"]) for followed_id in search]
-    following_profiles = await profile_collection.find({"user_id": {"$in": {following_id_list}}}).to_list(1000)
+    following_profiles = await profile_collection.find({"user_id": {"$in": following_id_list}}).to_list(1000)
     following = [following_username["username"] for following_username in following_profiles]
     return {"following": following}

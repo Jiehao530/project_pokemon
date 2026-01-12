@@ -5,7 +5,7 @@ from fastapi import APIRouter, status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from models.users_model import NewUser, User, UpdateUser
 from schemes.users_scheme import user_visual_scheme
-from helpers.users_helper import search_user, delete_existing_token, get_token, verify_token, existing_username, id_matching
+from helpers.users_helper import search_user, delete_existing_token, get_token, verify_token, existing_username, id_matching, insert_other_data
 from datetime import datetime
 from services.database import users_collection, token_collection
 from passlib.context import CryptContext
@@ -32,6 +32,7 @@ async def sign_up_user(new_user: NewUser):
     insert_new_user = await users_collection.insert_one(new_user_dict)
     if not insert_new_user.inserted_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error creating user")
+    await insert_other_data(insert_new_user.inserted_id, new_user.username, new_user_dict["created_date"])
     return {"detail": f"The user {new_user.username} has been created successfully"}
 
 #Sign In User source code
