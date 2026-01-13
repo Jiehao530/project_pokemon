@@ -6,6 +6,7 @@ from models.profile_model import Profile
 from helpers.users_helper import verify_user_id
 from helpers.profiles_helper import search_profile
 from helpers.follow_helper import get_followers_numbers, get_following_numbers
+from schemes.profile_scheme import profile_visual_scheme
 router = APIRouter(tags=["Profiles"])
 
 @router.get("/profile/{user_id}", status_code=status.HTTP_202_ACCEPTED)
@@ -17,8 +18,9 @@ async def get_profile(user_id: str):
         
     followers = await get_followers_numbers(profile.user_id)
     following = await get_following_numbers(profile.user_id)
+    visual_profile = profile_visual_scheme(profile.model_dump())
     return {
-        "profile": profile.model_dump(), 
+        "profile": visual_profile, 
         "followers": {"number_of_followers": followers}, 
         "following": {"number_of_following": following}
         }

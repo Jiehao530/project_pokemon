@@ -4,3 +4,9 @@ def profile_scheme(data) -> dict:
         "username": data["username"],
         "created_date": data["created_date"]
     }
+
+def profile_visual_scheme(data) -> dict:
+    return {
+        "username": data["username"],
+        "created_date": data["created_date"]
+    }
