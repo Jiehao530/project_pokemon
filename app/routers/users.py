@@ -14,6 +14,14 @@ from bson import ObjectId
 router = APIRouter(tags=["Users"])
 crypt = CryptContext(schemes=["bcrypt"])
 
+#Resolve username
+@router.get("/resolve/username/{username}", status_code=status.HTTP_202_ACCEPTED)
+async def get_user_id(username: str):
+    user = search_user("username", username)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return {"user_id": user.id}
+
 #Sign Up User source code
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def sign_up_user(new_user: NewUser):
@@ -39,7 +47,7 @@ async def sign_up_user(new_user: NewUser):
 @router.post("/signin", status_code=status.HTTP_202_ACCEPTED) 
 async def sign_in_user(username_and_password: OAuth2PasswordRequestForm = Depends()):
     user = await search_user("username", username_and_password.username)
-    if not isinstance(user, User):
+    if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     if not crypt.verify(username_and_password.password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Password Incorrect")
