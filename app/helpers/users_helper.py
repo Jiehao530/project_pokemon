@@ -55,17 +55,9 @@ async def verify_token(token: str = Depends(OAuth2)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is invalid")
     username = data_token.get("sub")
     user = await search_user("username", username)
-    return user
-
-async def existing_username(username: str):
-    user = await search_user("username", username)
     if not isinstance(user, User):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
-
-async def id_matching(username_id, user_id):
-    if username_id != user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="You don’t have permission to access this user")
 
 async def insert_other_data(user_id: str, username: str, created_date: datetime):
     await profile_collection.insert_one({

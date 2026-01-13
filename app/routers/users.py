@@ -5,7 +5,7 @@ from fastapi import APIRouter, status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from models.users_model import NewUser, User, UpdateUser
 from schemes.users_scheme import user_visual_scheme
-from helpers.users_helper import search_user, delete_existing_token, get_token, verify_token, existing_username, id_matching, insert_other_data
+from helpers.users_helper import search_user, delete_existing_token, get_token, verify_token, insert_other_data
 from datetime import datetime
 from services.database import users_collection, token_collection
 from passlib.context import CryptContext
@@ -50,21 +50,13 @@ async def sign_in_user(username_and_password: OAuth2PasswordRequestForm = Depend
     return {"token_type": "Bearer", "token": token}
 
 #Get User source code
-@router.get("/user/{username}", status_code=status.HTTP_202_ACCEPTED)
-@router.get("/user/", status_code=status.HTTP_202_ACCEPTED)
-async def get_user(username: str, user: User = Depends(verify_token)):
-    search_username = await existing_username(username)
-    await id_matching(search_username.id, user.id)
-
+@router.get("/user/me", status_code=status.HTTP_202_ACCEPTED)
+async def get_user(user: User = Depends(verify_token)):
     return user_visual_scheme(user.model_dump())
 
 #Update User source code
-@router.patch("/user/{username}", status_code=status.HTTP_202_ACCEPTED)
-@router.patch("/user/", status_code=status.HTTP_202_ACCEPTED)
-async def update_user(username: str, new_data: UpdateUser, user: User = Depends(verify_token)):
-    search_username = await existing_username(username)
-    await id_matching(search_username.id, user.id)
-
+@router.patch("/user/me", status_code=status.HTTP_202_ACCEPTED)
+async def update_user(new_data: UpdateUser, user: User = Depends(verify_token)):
     new_data_dict = new_data.model_dump(exclude_unset=True)
     if new_data.email:
         search_email = await users_collection.find_one({"email": new_data.email, "_id": {"$ne": ObjectId(user.id)}})
@@ -84,17 +76,13 @@ async def update_user(username: str, new_data: UpdateUser, user: User = Depends(
     return {"detail": "The user has been update successfully"}
 
 #Delete User source code
-@router.delete("/user/{username}", status_code=status.HTTP_202_ACCEPTED)
-@router.delete("/user/", status_code=status.HTTP_202_ACCEPTED)
-async def delete_user(username: str, user: User = Depends(verify_token)):
-    search_username = await existing_username(username)
-    await id_matching(search_username.id, user.id)
-
+@router.delete("/user/me", status_code=status.HTTP_202_ACCEPTED)
+async def delete_user(user: User = Depends(verify_token)):
     delete = await users_collection.delete_one({"_id": ObjectId(user.id)})
     if delete.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Delete Error")
     await token_collection.delete_one({"_id": ObjectId(user.id)})
-    return {"detail": f"The user {username} has been deleted successfully"}
+    return {"detail": f"The user {user.username} has been deleted successfully"}
 
 #Log Out User source code
 @router.post("/logout", status_code=status.HTTP_202_ACCEPTED)
