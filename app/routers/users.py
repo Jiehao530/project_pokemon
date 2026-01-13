@@ -17,7 +17,7 @@ crypt = CryptContext(schemes=["bcrypt"])
 #Resolve username
 @router.get("/resolve/username/{username}", status_code=status.HTTP_202_ACCEPTED)
 async def get_user_id(username: str):
-    user = search_user("username", username)
+    user = await search_user("username", username)
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return {"user_id": user.id}

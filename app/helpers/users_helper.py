@@ -55,7 +55,7 @@ async def verify_token(token: str = Depends(OAuth2)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="The token is invalid")
     username = data_token.get("sub")
     user = await search_user("username", username)
-    if not isinstance(user, User):
+    if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
 
@@ -65,3 +65,9 @@ async def insert_other_data(user_id: str, username: str, created_date: datetime)
         "username": username,
         "created_date": created_date
     })
+
+async def verify_user_id(user_id: str):
+    try:
+         return ObjectId(user_id) 
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user_id")
