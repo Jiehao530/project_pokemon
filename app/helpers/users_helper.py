@@ -66,7 +66,7 @@ async def insert_other_data(user_id: str, username: str, created_date: datetime)
         "created_date": created_date
     })
 
-async def verify_user_id(user_id: str):
+def verify_user_id(user_id: str):
     try:
          return ObjectId(user_id) 
     except:

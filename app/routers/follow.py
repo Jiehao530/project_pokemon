@@ -13,7 +13,7 @@ router = APIRouter(tags=["follow"])
 
 @router.post("/profile/{followed_id}/follow", status_code=status.HTTP_202_ACCEPTED)
 async def follow_user(followed_id: str, user: User = Depends(verify_token)):
-    objectid_followed_id = await verify_user_id(followed_id)
+    objectid_followed_id = verify_user_id(followed_id)
     search = await verify_follow("follower_id", ObjectId(user.id), "followed_id", objectid_followed_id)
     if isinstance(search, Follow):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You are already following this user")
@@ -29,7 +29,7 @@ async def follow_user(followed_id: str, user: User = Depends(verify_token)):
 
 @router.delete("/profile/{unfollow_id}/unfollow", status_code=status.HTTP_202_ACCEPTED)
 async def unfollow_user(unfollow_id: str, user: User = Depends(verify_token)):
-    objectid_unfollow_id = await verify_user_id(unfollow_id)
+    objectid_unfollow_id = verify_user_id(unfollow_id)
     search = await verify_follow("follower_id", ObjectId(user.id), "followed_id", objectid_unfollow_id)
     if search is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You aren't following this user")
@@ -41,7 +41,7 @@ async def unfollow_user(unfollow_id: str, user: User = Depends(verify_token)):
 
 @router.get("/profile/{user_id}/followers", status_code=status.HTTP_202_ACCEPTED)
 async def get_followers(user_id: str):
-    objectid_user_id = await verify_user_id(user_id)
+    objectid_user_id = verify_user_id(user_id)
     search = await search_follow("followed_id", objectid_user_id)
     if search is None:
         return {"followers": []}
@@ -52,7 +52,7 @@ async def get_followers(user_id: str):
 
 @router.get("/profile/{user_id}/following", status_code=status.HTTP_202_ACCEPTED)
 async def get_following(user_id: str):
-    objectid_user_id = await verify_user_id(user_id)
+    objectid_user_id = verify_user_id(user_id)
     search = await search_follow("follower_id", objectid_user_id)
     if search is None:
         return {"following": []}
