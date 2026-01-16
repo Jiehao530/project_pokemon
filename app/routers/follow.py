@@ -44,7 +44,7 @@ async def get_followers(user_id: str):
     objectid_user_id = await verify_user_id(user_id)
     search = await search_follow("followed_id", objectid_user_id)
     if search is None:
-        return []
+        return {"followers": []}
     followers_id_list = [ObjectId(follower_id["follower_id"]) for follower_id in search]
     followers_profiles = await profile_collection.find({"user_id": {"$in": followers_id_list}}).to_list(1000)
     followers = [follower_username["username"] for follower_username in followers_profiles]
@@ -55,7 +55,7 @@ async def get_following(user_id: str):
     objectid_user_id = await verify_user_id(user_id)
     search = await search_follow("follower_id", objectid_user_id)
     if search is None:
-        return []
+        return {"following": []}
     following_id_list = [ObjectId(followed_id["followed_id"]) for followed_id in search]
     following_profiles = await profile_collection.find({"user_id": {"$in": following_id_list}}).to_list(1000)
     following = [following_username["username"] for following_username in following_profiles]
