@@ -14,9 +14,11 @@ async def search_pokemon(number: int):
 
 def get_rarity_and_point_pokemon():
     rarity_options = [Rarity.COMMON.value, Rarity.RARE.value, Rarity.EPIC.value, Rarity.LEGENDARY.value]
-    weights = [50, 35, 10, 5]
-    rarity = random.choices(rarity_options, weights=weights, k=1)[0]
-    point = random.randint(1, 5)
+    rarity_weights = [50, 35, 10, 5]
+    rarity = random.choices(rarity_options, weights=rarity_weights, k=1)[0]
+    point_options = [1, 2, 3, 4, 5]
+    point_weights = [46, 33, 15, 5, 1]
+    point = random.choices(point_options, weights=point_weights, k=1)[0]
     return [rarity, point]
 
 
