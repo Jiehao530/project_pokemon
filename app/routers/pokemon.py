@@ -7,7 +7,6 @@ from schemes.pokemon_scheme import pokemon_figure_scheme
 from helpers.pokemon_helper import get_search_parameters
 from models.users_model import User
 from helpers.users_helper import verify_token
-from bson import ObjectId
 from typing import Optional, List
 
 router = APIRouter(tags=["pokémon"])
@@ -39,5 +38,5 @@ async def get_your_pokemon_figures(
         "page": page,
         "pagesize": pagesize,
         "total": total_pokemon_figures,
-        "total_pages": (total_pokemon_figures + pagesize -1) // pagesize
+        "total_pages": (total_pokemon_figures + pagesize - 1) // pagesize
     }
