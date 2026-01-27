@@ -7,7 +7,6 @@ from models.chests_model import Chest, ChestStatus
 from schemes.chests_scheme import chest_scheme, chest_status_scheme
 from bson import ObjectId
 from datetime import datetime, timedelta
-import random
 
 async def search_chest(field: str, value):
     chest = await chests_collection.find_one({field: value})
@@ -41,16 +40,3 @@ async def search_cheststatus(user_id: str):
         status = await insert_chest_status(user_id)
         return status
     return ChestStatus(**chest_status_scheme(chest_status))
-
-def get_pokemon_number(generation: int):
-    if generation == 1:
-        number = random.randint(1, 151)
-        return number
-    elif generation == 2:
-        number = random.randint(152, 251)
-        return number
-    elif generation == 3:
-        number = random.randint(252, 386)
-        return number
-    else:
-        return None
