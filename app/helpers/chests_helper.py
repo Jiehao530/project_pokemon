@@ -22,7 +22,7 @@ def verify_chest_id(chest_id: str):
 
 def get_pokemon_number(generation: int):
     if generation == 1:
-        number = random.randint(1, 3)
+        number = random.randint(1, 151)
         return number
     elif generation == 2:
         number = random.randint(152, 251)
