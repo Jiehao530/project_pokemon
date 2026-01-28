@@ -33,7 +33,7 @@ def get_rarity_and_point_pokemon():
     point = random.choices(point_options, weights=point_weights, k=1)[0]
     return [rarity, point]
 
-async def get_pokemon_figure(generation: int):
+async def get_pokemon_figure_by_chest(generation: int):
     pokemon = await get_pokemon(generation)
     rarity, points = get_rarity_and_point_pokemon()
     return {

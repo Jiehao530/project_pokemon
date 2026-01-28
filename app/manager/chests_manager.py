@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from helpers.pokemon_helper import get_pokemon_figure
+from helpers.pokemon_helper import get_pokemon_figure_by_chest
 from models.chests_model import ChestStatus
 from datetime import datetime, timedelta
 
@@ -47,5 +47,5 @@ class RewardChestManager(ChestsManager):
         open = self.open_chest()
         if not open:
             return None
-        pokemon_figure = await get_pokemon_figure(self.chest_generation_number)
+        pokemon_figure = await get_pokemon_figure_by_chest(self.chest_generation_number)
         return pokemon_figure
