@@ -61,10 +61,11 @@ async def open_chest(chest_id: str, user: User = Depends(verify_token)):
     reward = await manager.get_reward()
     if reward is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You haven't chests available")
-    update = await chest_status_collection.update_one({"user_id": ObjectId(user.id)}, {"$set": {"chest": manager.chest}})
-    if update.modified_count == 0:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Update Chest Error")
-
+    update_data = manager.model_cheststatus().model_dump()
+    update = await chest_status_collection.update_one({"user_id": ObjectId(user.id)}, {"$set": update_data})
+    if update.matched_count == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        
     insert_pokemon_figure = await pokemon_figure_collection.insert_one({"user_id": ObjectId(user.id), "pokemon_figure": reward})
     if not insert_pokemon_figure.inserted_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insert Pokemon Figure Error")
