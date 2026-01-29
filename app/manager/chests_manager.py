@@ -23,11 +23,11 @@ class ChestsManager:
         if chest_generation > 0:
             self.chest = min(self.MAX_CHESTS, self.chest + chest_generation)
             self.last_generation = now - (time_elapsed % self.GENERATION_TIME)
-        if self.chest >= self.MAX_CHESTS:
-            self.next_chest = None
-        else:
-            self.next_chest = self.last_generation + self.GENERATION_TIME
-    
+            if self.chest >= self.MAX_CHESTS:
+                self.next_chest = None
+            else:
+                self.next_chest = self.last_generation + self.GENERATION_TIME
+
     def open_chest(self):
         self.update_chest_status()
         if self.chest <= 0:
