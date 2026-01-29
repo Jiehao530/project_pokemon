@@ -43,9 +43,7 @@ async def get_cheststatus(user: User = Depends(verify_token)):
     chest_status.update_chest_status()
     model = chest_status.model_cheststatus()
 
-    update = await chest_status_collection.update_one({"user_id": ObjectId(user.id)}, {"$set": model.model_dump()})
-    if update.modified_count == 0:
-        return {"chest_status": search}
+    await chest_status_collection.update_one({"user_id": ObjectId(user.id)}, {"$set": model.model_dump()})
 
     return {"chest_status": model}
 
