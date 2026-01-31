@@ -6,7 +6,7 @@ def pokemon_scheme(data) -> dict:
         "generation": data["generation"]
     }
 
-def pokemon_figure_scheme(data) -> dict:
+def pokemon_figures_scheme(data) -> dict:
     return {
         "pokemon_figure": data["pokemon_figure"]
     }

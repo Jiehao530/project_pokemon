@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from fastapi import APIRouter, status, HTTPException, Depends, Query
 from services.database import pokemon_figure_collection
-from schemes.pokemon_scheme import pokemon_figure_scheme
+from schemes.pokemon_scheme import pokemon_figures_scheme
 from helpers.pokemon_helper import get_search_parameters
 from models.users_model import User
 from helpers.users_helper import verify_token
@@ -31,7 +31,7 @@ async def get_your_pokemon_figures(
     pokemon_figures = await pokemon_figure_collection.find(search_parameters).skip(skip).limit(pagesize).to_list()
     if not pokemon_figures:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    list_pokemon_figures = [pokemon_figure_scheme(pokemon_figure) for pokemon_figure in pokemon_figures]
+    list_pokemon_figures = [pokemon_figures_scheme(pokemon_figure) for pokemon_figure in pokemon_figures]
     
     return {
         "pokemon_figures": list_pokemon_figures,
