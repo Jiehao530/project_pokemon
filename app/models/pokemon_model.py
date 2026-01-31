@@ -21,3 +21,6 @@ class PokemonFigure(BaseModel):
     generation: int
     rarity: str
     points: int
+
+class PokemonFigureForSale(PokemonFigure):
+    price: int

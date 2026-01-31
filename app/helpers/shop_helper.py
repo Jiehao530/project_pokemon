@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from fastapi import HTTPException, status
 from services.database import shop_status_collection, shop_pokemon_figures_collection
-from helpers.pokemon_helper import search_pokemon, get_rarity_and_point_pokemon
+from helpers.pokemon_helper import search_pokemon, get_rarity_and_point_pokemon, get_price_for_pokemon_figure
 from models.shop_model import ShopStatusDB, ShopPokemonFigures
 from schemes.shop_scheme import shop_status_scheme, shop_pokemon_figures_scheme
 from manager.shop_manager import ShopManager
@@ -19,13 +19,15 @@ async def get_pokemon_figure_for_shop(number_repetition: int):
             number = random.randint(1, 151)
             pokemon = await search_pokemon(number)
         rarity, points =  get_rarity_and_point_pokemon()
+        price = get_price_for_pokemon_figure(rarity, points)
         pokemon_figure = {
             "number": pokemon.number,
             "name": pokemon.name,
             "type": pokemon.type,
             "generation": pokemon.generation,
             "rarity": rarity,
-            "points": points
+            "points": points,
+            "price": price
         }
         pokemon_figures.append(pokemon_figure)
     

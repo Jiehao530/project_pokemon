@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List
-from models.pokemon_model import PokemonFigure
+from models.pokemon_model import PokemonFigureForSale
 
 class ShopStatus(BaseModel):
     last_generated: datetime
@@ -16,4 +16,4 @@ class ShopStatusDB(ShopStatus):
 class ShopPokemonFigures(BaseModel):
     shop_id: str
     shop_name: str
-    pokemon_figures: List[PokemonFigure]
+    pokemon_figures: List[PokemonFigureForSale]
