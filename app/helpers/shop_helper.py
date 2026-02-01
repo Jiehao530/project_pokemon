@@ -21,6 +21,7 @@ async def get_pokemon_figure_for_shop(number_repetition: int):
         rarity, points =  get_rarity_and_point_pokemon()
         price = get_price_for_pokemon_figure(rarity, points)
         pokemon_figure = {
+            "pokemon_figure_id": ObjectId(),
             "number": pokemon.number,
             "name": pokemon.name,
             "type": pokemon.type,

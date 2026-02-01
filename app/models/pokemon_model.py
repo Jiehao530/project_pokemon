@@ -15,6 +15,7 @@ class Rarity(str, Enum):
     LEGENDARY = "legendary"
 
 class PokemonFigure(BaseModel):
+    pokemon_figure_id: str
     number: int
     name : str
     type: List[str]

@@ -9,6 +9,7 @@ from models.users_model import User
 from helpers.users_helper import verify_token
 from manager.chests_manager import ChestsManager, RewardChestManager
 from bson import ObjectId
+from schemes.pokemon_scheme import pokemon_figure_scheme
 
 router = APIRouter(tags=["chests"])
 
@@ -67,4 +68,4 @@ async def open_chest(chest_id: str, user: User = Depends(verify_token)):
     insert_pokemon_figure = await pokemon_figure_collection.insert_one({"user_id": ObjectId(user.id), "pokemon_figure": reward})
     if not insert_pokemon_figure.inserted_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insert Pokemon Figure Error")
-    return {"pokemon_figure": reward}
+    return {"pokemon_figure": pokemon_figure_scheme(reward)}

@@ -37,6 +37,7 @@ async def get_pokemon_figure_by_chest(generation: int):
     pokemon = await get_pokemon(generation)
     rarity, points = get_rarity_and_point_pokemon()
     return {
+            "pokemon_figure_id": ObjectId(),
             "number": pokemon.number,
             "name": pokemon.name,
             "type": pokemon.type,
