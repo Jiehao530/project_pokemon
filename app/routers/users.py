@@ -28,9 +28,8 @@ async def get_user_id(username: str):
     - 202: El ID del usuario ha sido encontrado
     - 404: El ID del usuario no ha sido encontrado
     """
-    #Encuentra al usuario que esta en la base de datos
+    #Buscamos el documento del usuario mediante el parámetro username del endpoint
     user = await search_user("username", username)
-    #Al no encontrarlo devuelve error
     if user is None: 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     #Devuelve solo el ID del usuario para no exponer todo el documento
@@ -51,7 +50,8 @@ async def sign_up_user(new_user: NewUser):
 
     Respuestas:
     - 201: El usuario creado
-    - 400: Correo o nombre de usuario usados
+    - 400: El correo esta en uso
+    - 400: El nombre de usuario esta en uso
     - 400: Error al crear el usuario
     """
     #Controla el nombre de usuario y correo para evitar duplicados 
@@ -64,10 +64,12 @@ async def sign_up_user(new_user: NewUser):
     
     new_user_dict = new_user.model_dump() #Convierte el modelo Pydantic a dict para poder modificarlo antes de insertarlo
     new_user_dict["password"] = crypt.hash(new_user.password) #Hashea la contraseña para no almacenar texto plano
+    #Metadatos que se va a insertar junto al documento
     new_user_dict["created_date"] = datetime.utcnow()
     new_user_dict["last_login"] = datetime.utcnow()
 
     insert_new_user = await users_collection.insert_one(new_user_dict)
+    #Manejar el error si no se inserta el documento a la base
     if not insert_new_user.inserted_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error creating user")
     await insert_other_data(insert_new_user.inserted_id, new_user.username, new_user_dict["created_date"])
@@ -116,14 +118,32 @@ async def get_user(user: User = Depends(verify_token)):
     1. Obtiene el usuario a través de la verificación del token
     2. Retorna los datos del usuario
     
+    Respuestas:
+    - 202: Datos del usuario obtenidos
+    - Otros: Consultar la función verify_token en users_helpers
     """
-
     return user_visual_scheme(user.model_dump())
 
-#Update User source code
+#Endpoint para actulizar el usuario
 @router.patch("/user/me", status_code=status.HTTP_202_ACCEPTED)
 async def update_user(new_data: UpdateUser, user: User = Depends(verify_token)):
-    new_data_dict = new_data.model_dump(exclude_unset=True)
+    """
+    Actulizar usuario
+    ----------------------------------------------------------------------------------
+    Flujo:
+    1. Verifica que el correo no esté en uso (si el usuario lo ha enviado)
+    2. Verifica que el nombre de usuario no esté en uso (si el usuario lo ha enviado)
+    3. Hashea la contraseña (si el usuario lo ha enviado)
+    4. Actuliza los datos que el usuario ha enviado
+    5. Retorna mensaje de actulización exitosa
+    
+    Respuestas:
+    - 202: El usuario se ha actualizado
+    - 400: El correo esta en uso
+    - 400: El nombre de usuario esta en uso
+    - Otros: Consultar la función verify_token en users_helpers
+    """
+    new_data_dict = new_data.model_dump(exclude_unset=True) #exclude_unset para excluir los campos None
     if new_data.email:
         search_email = await users_collection.find_one({"email": new_data.email, "_id": {"$ne": ObjectId(user.id)}})
         if isinstance(search_email, User):
@@ -137,22 +157,48 @@ async def update_user(new_data: UpdateUser, user: User = Depends(verify_token)):
         new_data_dict["password"] = hash_password
 
     update = await users_collection.update_one({"_id": ObjectId(user.id)}, {"$set": new_data_dict})
+    #Manejar el error si no se ha actualizado el documento
     if update.modified_count == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Update Error")
     return {"detail": "The user has been update successfully"}
 
-#Delete User source code
+#Endpoint para eliminar el usuario
 @router.delete("/user/me", status_code=status.HTTP_202_ACCEPTED)
 async def delete_user(user: User = Depends(verify_token)):
+    """
+    Eliminar usuario
+    -------------------------------------------
+    Flujo:
+    1. Elimina el usuario
+    2. Retorna mensaje de eliminación exitosa
+
+    Respuestas:
+    - 202: Usuario eliminado
+    - 400: Error al eliminar el usuario
+    - Otros: Consultar la función verify_token en users_helpers
+    """
     delete = await users_collection.delete_one({"_id": ObjectId(user.id)})
     if delete.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Delete Error")
     await token_collection.delete_one({"_id": ObjectId(user.id)})
     return {"detail": f"The user {user.username} has been deleted successfully"}
 
-#Log Out User source code
+#Endpoint para cerrar sesión
 @router.post("/logout", status_code=status.HTTP_202_ACCEPTED)
 async def log_out_user(user: User = Depends(verify_token)):
+    """
+    Cerrar sesión
+    -------------------------------------------------------------
+    Flujo:
+    1. Elimina el token de sesión
+    2. Retorna mensaje de cierre de sesión 
+
+    Respuestas:
+    - 202: Cierre de sesión correcto
+    - 400: Error de cierre de sesión
+    - Otros: Consultar la función verify_token en users_helpers
+    """
+    #Eliminar el token de sesión de la base de datos invalida que no se pueda usar el token aún no caducado
     delete_token = await token_collection.delete_one({"user_id": ObjectId(user.id)})
     if delete_token.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Log Out Error")
