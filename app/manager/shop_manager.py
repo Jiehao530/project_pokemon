@@ -15,8 +15,14 @@ class ShopManager:
         now = datetime.utcnow()
         if not now >= self.next_shop:
             return False
-        next_update = self.next_shop + self.UPDATE_IN
-        self.last_generated = self.next_shop
+        time_elapsed = now - self.last_generated
+        days_elapsed = time_elapsed // self.UPDATE_IN
+        days = timedelta(days=days_elapsed)
+        
+        last_update = self.last_generated + days
+        next_update = last_update + self.UPDATE_IN
+        
+        self.last_generated = last_update
         self.next_shop = next_update
         return True
         
