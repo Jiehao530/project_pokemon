@@ -10,9 +10,12 @@ def shop_status_scheme(data) -> dict:
         "next_shop": data["next_shop"]
     }
 
-def shop_pokemon_figures_scheme(data) -> dict:
-    return {
-        "shop_id": str(data["shop_id"]),
-        "shop_name": data["shop_name"],
-        "pokemon_figures": [pokemon_figure_for_sale_scheme(pokemon_figure) for pokemon_figure in data["pokemon_figures"]]
-    }
+def shop_pokemon_figures_scheme(data) -> list:
+    pokemon_figures_list = []
+    for data_pokemon_figure_shop in data:
+        pokemon_figure = {
+            "pokemon_figure_id": str(data_pokemon_figure_shop["_id"]),
+            "pokemon_figure": pokemon_figure_for_sale_scheme(data_pokemon_figure_shop["pokemon_figure"])
+        }
+        pokemon_figures_list.append(pokemon_figure)
+    return pokemon_figures_list

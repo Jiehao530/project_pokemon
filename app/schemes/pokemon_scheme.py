@@ -24,7 +24,6 @@ def pokemon_figures_scheme(data) -> dict:
 
 def pokemon_figure_for_sale_scheme(data) -> dict:
     return {
-        "pokemon_figure_id": str(data["pokemon_figure_id"]),
         "number": data["number"],
         "name": data["name"],
         "type": data["type"],
