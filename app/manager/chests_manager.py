@@ -33,6 +33,8 @@ class ChestsManager:
         if self.chest <= 0:
             return False
         self.chest -= 1
+        if self.next_chest == None:
+            self.next_chest = self.last_generation + self.GENERATION_TIME
         return True
 
     def model_cheststatus(self) -> ChestStatus:
