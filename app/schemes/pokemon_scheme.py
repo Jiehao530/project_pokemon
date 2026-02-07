@@ -29,6 +29,5 @@ def pokemon_figure_for_sale_scheme(data) -> dict:
         "type": data["type"],
         "generation": data["generation"],
         "rarity": data["rarity"],
-        "points": data["points"],
-        "price": data["price"]
+        "points": data["points"]
     }
