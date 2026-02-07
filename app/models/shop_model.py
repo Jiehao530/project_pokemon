@@ -27,7 +27,7 @@ class ShopPokemonFigures(BaseModel):
     pokemon_figure: PokemonFigureShop
     price: int
     currency: Currency
-    expires_at: int
+    expires_at: datetime
 
 class ShopPokecoins(BaseModel):
     id: str
