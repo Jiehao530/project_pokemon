@@ -23,5 +23,10 @@ class PokemonFigure(BaseModel):
     rarity: str
     points: int
 
-class PokemonFigureForSale(PokemonFigure):
-    price: int
+class PokemonFigureShop(BaseModel):
+    number: int
+    name : str
+    type: List[str]
+    generation: int
+    rarity: str
+    points: int
