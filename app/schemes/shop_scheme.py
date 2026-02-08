@@ -3,6 +3,14 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from schemes.pokemon_scheme import pokemon_figure_for_sale_scheme
 
+def shop_config_scheme(data) -> dict:
+    return {
+        "id": data["_id"],
+        "refresh_at": data["refresh_at"],
+        "last_refresh": data["last_refresh"],
+        "refresh_interval_hours": data["refresh_interval_hours"]
+    }
+
 def shop_items_pokecoins_scheme(data) -> dict:
     return {
         "id": str(data["_id"]),
