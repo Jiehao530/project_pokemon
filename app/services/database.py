@@ -38,7 +38,7 @@ pokecoins_collection = client["pokecoins"]
 
 # SHOP
 #-----------------------------------------------------
-shop_status_collection = client["shop_status"]
+shop_config_collection = client["shop_config"]
 shop_items_collection = client["shop_items"]
 shop_pokemon_figures_collection = client["shop_pokemon_figures"]
 shop_pokecoins_collection = client["shop_pokecoins"]
