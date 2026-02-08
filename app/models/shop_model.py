@@ -6,6 +6,12 @@ from datetime import datetime
 from enum import Enum
 from models.pokemon_model import PokemonFigureShop
 
+class ShopRefresh(BaseModel):
+    id: str
+    refresh_at: datetime
+    last_refresh: datetime
+    refresh_interval_hours: int
+
 class ShopType(str, Enum):
     POKEMON_FIGURE = "pokemon_figure"
     POKECOINS = "pokecoins"
@@ -13,13 +19,6 @@ class ShopType(str, Enum):
 class Currency(str, Enum):
     POKECOINS = "pokecoins"
     REAL_MONEY = "real_money"
-
-class ShopStatus(BaseModel):
-    last_generated: datetime
-    next_shop: datetime
-
-class ShopStatusDB(ShopStatus):
-    id: str
 
 class ShopPokemonFigures(BaseModel):
     id: str
