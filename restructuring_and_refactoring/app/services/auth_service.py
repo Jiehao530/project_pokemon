@@ -40,3 +40,9 @@ class AuthService:
         await UserRepository.update_last_login(user.id)
 
         return {"token_type": "Bearer", "token": token}
+    
+    async def logout_user(self, user: User):
+        delete_token = await AuthRepository.delete_token("user_id", ObjectId(user.id))
+        if delete_token == 0:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Log Out Error")
+        return {"detail": f"You have been successfully logged out"}
