@@ -24,3 +24,8 @@ def user_visual_profile_converter(data) -> dict:
         "created_date": data["created_date"],
         "last_login": data["last_login"]
     }
+
+def user_id_converter(data) -> dict:
+    return {
+        "user_id": data["id"]
+    }

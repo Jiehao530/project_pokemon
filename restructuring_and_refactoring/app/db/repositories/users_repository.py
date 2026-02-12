@@ -1,6 +1,6 @@
 from app.db.repositories.collections import users_collection
 from app.schemes.users_scheme import User
-from app.utils.users_converters import user_converter, user_visual_profile_converter
+from app.utils.users_converters import user_converter, user_visual_profile_converter, user_id_converter
 from datetime import datetime
 from bson.objectid import ObjectId
 
@@ -50,3 +50,8 @@ class UserRepository:
     async def search_user_visual_profile_by_id(user_id):
         search_user_by_id = await users_collection.find_one({"_id": user_id})
         return user_visual_profile_converter(search_user_by_id) if search_user_by_id else None
+
+    @staticmethod
+    async def search_user_id_by_username(username: str):
+        search_user_id = await users_collection.find_one({"username": username})
+        return user_id_converter(search_user_id) if search_user_id else None

@@ -36,3 +36,9 @@ class UserService:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Delete Error")
         await AuthRepository.delete_token("user_id", ObjectId(user.id))
         return {"detail": f"The user {user.username} has been deleted successfully"}
+    
+    async def get_user_id(self, username: str):
+        user_id = UserRepository.search_user_id_by_username(username)
+        if user_id is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        return user_id
