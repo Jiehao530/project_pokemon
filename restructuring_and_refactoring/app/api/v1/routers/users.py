@@ -5,7 +5,6 @@ from app.services.users_service import UserService
 
 router = APIRouter(tags=["Users"])
 
-
 @router.get("/user/me", status_code=status.HTTP_202_ACCEPTED)
 async def get_user(user: User = Depends(get_current_user)):
     return UserService().get_user(user)
