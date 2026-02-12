@@ -127,22 +127,6 @@ async def get_user(user: User = Depends(verify_token)):
 #Endpoint para actulizar el usuario
 @router.patch("/user/me", status_code=status.HTTP_202_ACCEPTED)
 async def update_user(new_data: UpdateUser, user: User = Depends(verify_token)):
-    """
-    Actulizar usuario
-    ----------------------------------------------------------------------------------
-    Flujo:
-    1. Verifica que el correo no esté en uso (si el usuario lo ha enviado)
-    2. Verifica que el nombre de usuario no esté en uso (si el usuario lo ha enviado)
-    3. Hashea la contraseña (si el usuario lo ha enviado)
-    4. Actuliza los datos que el usuario ha enviado
-    5. Retorna mensaje de actulización exitosa
-    
-    Respuestas:
-    - 202: El usuario se ha actualizado
-    - 400: El correo esta en uso
-    - 400: El nombre de usuario esta en uso
-    - Otros: Consultar la función verify_token en users_helpers
-    """
     new_data_dict = new_data.model_dump(exclude_unset=True) #exclude_unset para excluir los campos None
     if new_data.email:
         search_email = await users_collection.find_one({"email": new_data.email, "_id": {"$ne": ObjectId(user.id)}})

@@ -64,34 +64,23 @@ def get_search_parameters(user_id: str, number, name, type, generation, rarity, 
     
     return search_parameters
 
-def get_price_for_pokemon_figure(rarity: str, points: int):
-    price = 0
-    rarity_class = Rarity(rarity)
-    price_of_rarity = [80, 120, 150, 200]
-    price_of_points = [10, 20, 30, 40, 50]
-
-    if rarity_class == Rarity.COMMON:
-        price += price_of_rarity[0]
-    elif rarity_class == Rarity.RARE:
-        price += price_of_rarity[1]
-    elif rarity_class == Rarity.EPIC:
-        price += price_of_rarity[2]
-    elif rarity_class == Rarity.LEGENDARY:
-        price += price_of_rarity[3]
-    else:
-        price += 0
-
-    if points == 1:
-        price += price_of_points[0]
-    elif points == 2:
-        price += price_of_points[1]
-    elif points == 3:
-        price += price_of_points[2]
-    elif points == 4:
-        price += price_of_points[3]
-    elif points == 5:
-        price += price_of_points[4]
-    else: 
-        price += 0
+async def get_pokemon_figure_for_shop(number_repetition: int):
+    pokemon_figures = []
     
-    return price
+    for _ in range(number_repetition):
+        pokemon = None
+        while pokemon is None:
+            number = random.randint(1, 151)
+            pokemon = await search_pokemon(number)
+        rarity, points =  get_rarity_and_point_pokemon()
+        pokemon_figure = {
+            "number": pokemon.number,
+            "name": pokemon.name,
+            "type": pokemon.type,
+            "generation": pokemon.generation,
+            "rarity": rarity,
+            "points": points
+        }
+        pokemon_figures.append(pokemon_figure)
+    
+    return pokemon_figures
