@@ -50,7 +50,7 @@ class UserRepository:
     async def search_user_visual_profile_by_id(user_id):
         search_user_by_id = await users_collection.find_one({"_id": user_id})
         return user_visual_profile_converter(search_user_by_id) if search_user_by_id else None
-
+    
     @staticmethod
     async def search_user_id_by_username(username: str):
         search_user_id = await users_collection.find_one({"username": username})
