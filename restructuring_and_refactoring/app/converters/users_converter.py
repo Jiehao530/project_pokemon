@@ -27,5 +27,5 @@ def user_visual_profile_converter(data) -> dict:
 
 def user_id_converter(data) -> dict:
     return {
-        "user_id": data["id"]
+        "user_id": str(data["_id"])
     }

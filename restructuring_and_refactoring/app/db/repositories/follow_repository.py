@@ -1,6 +1,6 @@
 from app.db.repositories.collections import follow_collection
 from app.schemes.follow_scheme import Follow
-from app.utils.follow_converters import follow_converter
+from app.converters.follow_converter import follow_converter
 
 class FollowRepository:
 
