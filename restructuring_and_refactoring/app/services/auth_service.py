@@ -55,7 +55,7 @@ class AuthService:
         
         objectid_user_id = id_converter(user.id)
         await AuthRepository.delete_token("user_id", objectid_user_id)
-        token = self.get_token(user)
+        token = await self.get_token(user)
         await UserRepository.update_last_login(objectid_user_id)
 
         return {"token_type": "Bearer", "access_token": token}

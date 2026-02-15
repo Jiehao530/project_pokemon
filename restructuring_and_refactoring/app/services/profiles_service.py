@@ -3,7 +3,6 @@ from app.db.repositories.users_repository import UserRepository
 from app.services.follow_service import FollowService
 from app.utils.id_converter import id_converter
 
-
 class ProfileService:
 
     async def get_profile(self, user_id: str):
