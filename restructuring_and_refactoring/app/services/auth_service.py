@@ -6,9 +6,8 @@ from app.schemes.auth_scheme import NewUser
 from app.schemes.users_scheme import User
 from app.utils.id_converter import id_converter
 from app.utils.security import crypt_password, verify_password, encode_token
-from datetime import datetime, timedelta
-
-TOKEN_DURATION = timedelta(days=1)
+from app.constants.auth_constants import TOKEN_DURATION
+from datetime import datetime
 
 class AuthService:
 
