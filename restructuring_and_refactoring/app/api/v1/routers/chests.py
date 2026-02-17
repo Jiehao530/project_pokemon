@@ -23,4 +23,4 @@ async def get_cheststatus(user: User = Depends(get_current_user)):
 
 @router.post("/chests/{chest_id}/open", status_code=status.HTTP_202_ACCEPTED)
 async def open_chest(chest_id: str, user: User = Depends(get_current_user)):
-    ""
+    return await ChestsService().open_chest(chest_id, user)

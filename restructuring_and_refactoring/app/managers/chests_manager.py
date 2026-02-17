@@ -1,4 +1,5 @@
 from app.schemes.chests_scheme import ChestStatus
+from app.managers.pokemon_figure_manager import PokemonFigureManager
 from datetime import datetime, timedelta
 
 
@@ -44,5 +45,5 @@ class RewardChestManager(ChestsManager):
         open = self.open_chest()
         if not open:
             return None
-        pokemon_figure = ""
+        pokemon_figure = await PokemonFigureManager.get_pokemon_figure_for_chest(self.chest_generation_number)
         return pokemon_figure

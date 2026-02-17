@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 from app.db.repositories.chests_repository import ChestsRepository
+from app.db.repositories.pokemon_figure_repository import PokemonFigureRepository
 from app.managers.chests_manager import ChestsManager, RewardChestManager
 from app.utils.id_converter import id_converter
 from app.utils.chest_status_data import new_chest_status_data
@@ -54,7 +55,14 @@ class ChestsService:
         if reward is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You haven't chests available")
         
+        objectid_user_id = id_converter(user.id)
         update_data = reward_chest_manager.get_cheststatus_scheme().model_dump()
-        update = ChestsRepository.update_chest_status(id_converter(user.id), update_data)
+        update = ChestsRepository.update_chest_status(objectid_user_id, update_data)
         if not update:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Update Chest Status Error")
+        
+        insert_pokemon_figure = await PokemonFigureRepository.insert_pokemon_figure({"user_id": objectid_user_id, "pokemon_figure": reward})
+        if not insert_pokemon_figure:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insert Pokémon Figure Error")
+        return {"pokemon_figure": reward}
+
