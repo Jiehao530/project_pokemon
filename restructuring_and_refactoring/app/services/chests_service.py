@@ -5,6 +5,7 @@ from app.managers.chests_manager import ChestsManager, RewardChestManager
 from app.utils.id_converter import id_converter
 from app.utils.chest_status_data import new_chest_status_data
 from app.schemes.users_scheme import User
+from app.converters.pokemon_figure_converter import pokemon_figure_converter
 
 class ChestsService:
 
@@ -51,18 +52,18 @@ class ChestsService:
         chest_status = chest_status_dict["chest_status"]
 
         reward_chest_manager = RewardChestManager(chest_status.chest, chest_status.last_generated, chest_status.next_chest, chest.generation)
-        reward = reward_chest_manager.get_reward()
+        reward = await reward_chest_manager.get_reward()
         if reward is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You haven't chests available")
         
         objectid_user_id = id_converter(user.id)
         update_data = reward_chest_manager.get_cheststatus_scheme().model_dump()
-        update = ChestsRepository.update_chest_status(objectid_user_id, update_data)
+        update = await ChestsRepository.update_chest_status(objectid_user_id, update_data)
         if not update:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Update Chest Status Error")
         
         insert_pokemon_figure = await PokemonFigureRepository.insert_pokemon_figure({"user_id": objectid_user_id, "pokemon_figure": reward})
         if not insert_pokemon_figure:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insert Pokémon Figure Error")
-        return {"pokemon_figure": reward}
+        return {"pokemon_figure": pokemon_figure_converter(reward)}
 
