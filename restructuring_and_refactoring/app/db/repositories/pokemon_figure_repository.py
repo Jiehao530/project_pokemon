@@ -15,5 +15,5 @@ class PokemonFigureRepository:
     @staticmethod
     async def search_pokemon_figures(search_parameters: dict, page: int, pagesize: int):
         skip = (page - 1) * pagesize
-        pokemon_figures_list = await pokemon_figure_collection.find(search_parameters).skip(skip).limit(pagesize).to_list()
-        return pokemon_figures_list
+        my_pokemon_figures_list = await pokemon_figure_collection.find(search_parameters).skip(skip).limit(pagesize).to_list()
+        return [pokemon_figure["pokemon_figure"] for pokemon_figure in my_pokemon_figures_list]
