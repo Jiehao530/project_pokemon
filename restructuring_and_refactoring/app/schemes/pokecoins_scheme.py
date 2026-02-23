@@ -5,3 +5,9 @@ class Pokecoins(BaseModel):
     user_id: str
     amount: int
     currency: Currency
+
+class PokecoinsPack(BaseModel):
+    id: str
+    amount: int
+    price: float
+    currency: Currency
