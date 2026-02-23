@@ -5,7 +5,7 @@ from fastapi import APIRouter, status, HTTPException
 from services.database import shop_items_collection, shop_config_collection
 from models.shop_model import ShopType
 from schemes.shop_scheme import shop_items_pokecoins_scheme, shop_config_scheme
-from helpers.shop_helper import get_shop_items_pokemon_figure, get_shop_config
+from helpers.shop_helper import , get_shop_config
 from manager.shop_manager import ShopManager
 
 router = APIRouter(tags=["Shop"])
