@@ -13,3 +13,4 @@ class PokecoinsRepository:
     async def insert_pokecoins(data_pokecoins: dict):
         insert = await pokecoins_collection.insert_one(data_pokecoins)
         return insert.acknowledged
+

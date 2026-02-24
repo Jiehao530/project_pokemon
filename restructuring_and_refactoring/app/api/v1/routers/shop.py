@@ -10,3 +10,7 @@ async def get_shop_config():
 @router.get("/shop/pokecoins_packs", status_code=status.HTTP_202_ACCEPTED)
 async def get_pokecoins_packs():
     return await ShopService().get_pokecoins_packs()
+
+@router.get("/shop/pokemon_figures", status_code=status.HTTP_202_ACCEPTED)
+async def get_pokemon_figures_for_shop():
+    return await ShopService().get_pokemon_figures_for_shop()

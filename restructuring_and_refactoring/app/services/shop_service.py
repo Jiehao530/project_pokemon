@@ -1,6 +1,7 @@
 from app.db.repositories.shop_repository import ShopRepository
 from app.managers.shop_config_manager import ShopManager
 from app.enums.shop_type_enum import ShopType
+from app.services.pokemon_figure_service import PokemonFigureService
 
 class ShopService:
 
@@ -16,6 +17,7 @@ class ShopService:
         if resfresh:
             await ShopRepository.delete_shop_items_for_expire()
             await ShopRepository.update_shop_config(field, value, shop_config)
+            await PokemonFigureService().new_pokemon_figures_for_shop(shop_config["refresh_at"])
         return {"shop_config": shop_config}
     
     async def get_pokecoins_packs(self):
@@ -23,3 +25,9 @@ class ShopService:
         if not pokecoins_packs_list:
             return {"pokecoins_packs": "None"}
         return {"pokecoins_packs": pokecoins_packs_list}
+
+    async def get_pokemon_figures_for_shop(self):
+        pokemon_figures_for_shop_list = await ShopRepository.search_pokemon_figures_of_the_shop_items("type", ShopType.POKEMON_FIGURE.value)
+        if not pokemon_figures_for_shop_list:
+            return {"pokemon_figures": "None"}
+        return {"pokemon_figures": pokemon_figures_for_shop_list}

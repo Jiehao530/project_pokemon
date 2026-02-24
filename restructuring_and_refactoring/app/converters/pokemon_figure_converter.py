@@ -9,4 +9,13 @@ def pokemon_figure_converter(data) -> dict:
         "points": data["points"]
     }
 
+def pokemon_figure_for_shop_converter(data) -> dict:
+    return {
+        "number": data["number"],
+        "name": data["name"],
+        "type": data["type"],
+        "generation": data["generation"],
+        "rarity": data["rarity"],
+        "points": data["points"]
+    }
     

@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from app.enums.shop_type_enum import ShopType
 from app.enums.currency_enum import Currency
+from app.schemes.pokemon_figure_scheme import PokemonFigureShop
 
 class ShopConfig(BaseModel):
     id: str
@@ -15,3 +16,11 @@ class ShopPokecoinsPack(BaseModel):
     item_id: str
     price: float
     currency: Currency
+
+class ShopItemPokemonFigure(BaseModel):
+    id: str
+    type: ShopType
+    pokemon_figure: PokemonFigureShop
+    price: int
+    currency: Currency
+    expires_at: datetime
