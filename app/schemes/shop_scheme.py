@@ -1,31 +1,26 @@
-import os
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from schemes.pokemon_scheme import pokemon_figure_for_sale_scheme
+from pydantic import BaseModel
+from datetime import datetime
+from app.enums.shop_type_enum import ShopType
+from app.enums.currency_enum import Currency
+from app.schemes.pokemon_figure_scheme import PokemonFigureShop
 
-def shop_config_scheme(data) -> dict:
-    return {
-        "id": data["_id"],
-        "refresh_at": data["refresh_at"],
-        "last_refresh": data["last_refresh"],
-        "refresh_interval_hours": data["refresh_interval_hours"]
-    }
+class ShopConfig(BaseModel):
+    id: str
+    refresh_at: datetime
+    last_refresh: datetime
+    refresh_interval_hours: int
 
-def shop_items_pokecoins_scheme(data) -> dict:
-    return {
-        "id": str(data["_id"]),
-        "type": data["type"],
-        "item_id": data["item_id"],
-        "price": float(str(data["price"])),
-        "currency": data["currency"]
-        }
+class ShopPokecoinsPack(BaseModel):
+    id: str
+    type: ShopType
+    item_id: str
+    price: float
+    currency: Currency
 
-def shop_items_pokemon_figure_scheme(data) -> dict:
-    return {
-        "id": str(data["_id"]),
-        "type": data["type"],
-        "pokemon_figure": pokemon_figure_for_sale_scheme(data["pokemon_figure"]),
-        "price": data["price"],
-        "currency": data["currency"],
-        "expires_at": data["expires_at"]
-    }
+class ShopItemPokemonFigure(BaseModel):
+    id: str
+    type: ShopType
+    pokemon_figure: PokemonFigureShop
+    price: int
+    currency: Currency
+    expires_at: datetime

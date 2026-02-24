@@ -1,19 +1,16 @@
-def user_scheme(data) -> dict:
-    return {
-        "id": str(data["_id"]),
-        "username": data["username"],
-        "password": data["password"],
-        "email": data["email"],
-        "created_date": data["created_date"],
-        "last_login": data["last_login"],
-    }
+from pydantic import BaseModel, EmailStr
+from datetime import datetime
+from typing import Optional
 
-def user_visual_scheme(data) -> dict:
-    return {
-        "id": data["id"],
-        "username": data["username"],
-        "password": "********",
-        "email": data["email"],
-        "created_date": data["created_date"],
-        "last_login": data["last_login"]
-    }
+class User(BaseModel):
+    id: str
+    username: str
+    password: str
+    email: EmailStr
+    created_date: datetime
+    last_login: datetime
+
+class UpdateUser(BaseModel):
+    username: Optional[str] = None
+    password: Optional[str] = None
+    email: Optional[EmailStr] = None

@@ -1,12 +1,17 @@
-def chest_scheme(data) -> dict:
-    return {
-        "name": data["name"],
-        "generation": data["generation"]
-    }
+from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
 
-def chest_status_scheme(data) -> dict:
-    return {
-        "chest": data["chest"],
-        "last_generated": data["last_generated"],
-        "next_chest": data["next_chest"]
-    }
+class Chest(BaseModel):
+    id: str
+    name: str
+    generation: int
+
+class ChestStatus(BaseModel):
+    chest: int
+    last_generated: datetime
+    next_chest: Optional[datetime] = None
+
+class ChestStatusDB(ChestStatus):
+    id: str
+    user_id: str

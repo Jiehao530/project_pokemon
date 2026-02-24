@@ -1,14 +1,13 @@
-def pokecoins_pack_scheme(data) -> dict:
-    return {
-        "id": data["_id"],
-        "amount": data["amount"],
-        "price": float(str(data["price"])),
-        "currency": data["currency"]
-    }
+from pydantic import BaseModel
+from app.enums.currency_enum import Currency
 
+class Pokecoins(BaseModel):
+    user_id: str
+    amount: int
+    currency: Currency
 
-def pokecoins_scheme(data) -> dict:
-    return {
-        "user_id": str(data["user_id"]),
-        "pokecoins": data["pokecoins"]
-    }
+class PokecoinsPack(BaseModel):
+    id: str
+    amount: int
+    price: float
+    currency: Currency

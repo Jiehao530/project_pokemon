@@ -1,5 +1,5 @@
-def follow_scheme(data) -> dict:
-    return {
-        "follower_id": str(data["follower_id"]),
-        "followed_id": str(data["followed_id"])
-    }
+from pydantic import BaseModel
+
+class Follow(BaseModel):
+    follower_id: str
+    followed_id: str
