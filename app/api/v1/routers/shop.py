@@ -3,6 +3,10 @@ from app.services.shop_service import ShopService
 
 router = APIRouter(tags=["Shop"])
 
+@router.get("/shop/daily_shop", status_code=status.HTTP_202_ACCEPTED)
+async def get_daily_shop():
+    return await ShopService().get_daily_shop()
+
 @router.get("/shop/shop_config", status_code=status.HTTP_202_ACCEPTED)
 async def get_shop_config():
     return await ShopService().get_shop_config("_id", "daily_shop")

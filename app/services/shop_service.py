@@ -31,3 +31,14 @@ class ShopService:
         if not pokemon_figures_for_shop_list:
             return {"pokemon_figures": "None"}
         return {"pokemon_figures": pokemon_figures_for_shop_list}
+
+    async def get_daily_shop(self):
+        shop_config = await self.get_shop_config("_id", "daily_shop")
+        pokemon_figures = await self.get_pokemon_figures_for_shop()
+        pokecoins_packs = await self.get_pokecoins_packs()
+
+        return [
+            shop_config, 
+            pokemon_figures, 
+            pokecoins_packs
+            ]
