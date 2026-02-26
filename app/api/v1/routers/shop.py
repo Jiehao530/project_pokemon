@@ -7,14 +7,14 @@ router = APIRouter(tags=["Shop"])
 async def get_daily_shop():
     return await ShopService().get_daily_shop()
 
-@router.get("/shop/shop_config", status_code=status.HTTP_202_ACCEPTED)
+@router.get("/shop/daily_shop/shop_config", status_code=status.HTTP_202_ACCEPTED)
 async def get_shop_config():
     return await ShopService().get_shop_config("_id", "daily_shop")
 
-@router.get("/shop/pokecoins_packs", status_code=status.HTTP_202_ACCEPTED)
+@router.get("/shop/daily_shop/pokecoins_packs", status_code=status.HTTP_202_ACCEPTED)
 async def get_pokecoins_packs():
     return await ShopService().get_pokecoins_packs()
 
-@router.get("/shop/pokemon_figures", status_code=status.HTTP_202_ACCEPTED)
+@router.get("/shop/daily_shop/pokemon_figures", status_code=status.HTTP_202_ACCEPTED)
 async def get_pokemon_figures_for_shop():
     return await ShopService().get_pokemon_figures_for_shop()
