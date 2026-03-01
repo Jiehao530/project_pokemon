@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 from datetime import datetime
+from app.enums.currency_enum import Currency
 
 class PurchaseResult(BaseModel):
     item_id : str
     user_id: str
-    pokecoins_left: int
+    currency: Currency
 
 class Purchase(BaseModel):
     purchase_id: str
