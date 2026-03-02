@@ -40,3 +40,8 @@ class ShopRepository:
     async def insert_many_in_shop_items(data_list: list):
         insert = await shop_items_collection.insert_many(data_list)
         return insert.acknowledged
+
+    @staticmethod
+    async def search_item(field: str, value):
+        item = await shop_items_collection.find_one({field: value})
+        return item if item else None

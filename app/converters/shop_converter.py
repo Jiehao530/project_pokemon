@@ -25,4 +25,4 @@ def shop_items_pokemon_figure_converter(data) -> dict:
         "price": data["price"],
         "currency": data["currency"],
         "expires_at": data["expires_at"],
-    }
+    }   

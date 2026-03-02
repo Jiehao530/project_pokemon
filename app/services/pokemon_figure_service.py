@@ -1,14 +1,16 @@
 from fastapi import HTTPException, status
 from app.db.repositories.pokemon_figure_repository import PokemonFigureRepository
 from app.db.repositories.shop_repository import ShopRepository
+from app.services.pokecoins_service import PokecoinsService
 from app.managers.pokemon_figure_manager import PokemonFigureManager
 from app.schemes.pokemon_figure_scheme import PokemonFigure
-from app.converters.pokemon_figure_converter import pokemon_figure_converter
+from app.schemes.users_scheme import User
+from app.converters.pokemon_figure_converter import pokemon_figure_converter, pokemon_figure_buy_converter
 from app.utils.id_converter import id_converter
 from app.constants.price_constants import PRICE_RARITY, PRICE_POINTS
 from app.enums.shop_type_enum import ShopType
 from app.enums.currency_enum import Currency
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class PokemonFigureService:
 
@@ -59,4 +61,14 @@ class PokemonFigureService:
         insert = await ShopRepository.insert_many_in_shop_items(document_list)
         if not insert:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insert Pokémon Figure For Shop Error")
-        return True       
+        return True 
+
+    @staticmethod
+    async def buy_pokemon_figure(item_of_the_shop_items: dict, user: User):
+        await PokecoinsService().subtract_pokecoins_for_buying(item_of_the_shop_items["price"], user)
+        pokemon_figure_dict = pokemon_figure_buy_converter(item_of_the_shop_items["pokemon_figure"])
+
+        insert_pokemon_figure = await PokemonFigureRepository.insert_pokemon_figure({"user_id": id_converter(user.id), "pokemon_figure": pokemon_figure_dict})
+        if not insert_pokemon_figure:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insert Pokémon Figure Error")
+        return True
