@@ -1,7 +1,14 @@
+from fastapi import HTTPException, status
 from app.db.repositories.shop_repository import ShopRepository
+from app.db.repositories.purchase_repository import PurchaseRepository
 from app.managers.shop_config_manager import ShopManager
 from app.enums.shop_type_enum import ShopType
 from app.services.pokemon_figure_service import PokemonFigureService
+from app.schemes.users_scheme import User
+from app.utils.id_converter import id_converter
+from app.enums.shop_type_enum import ShopType
+from app.constants.shop_constants import PURCHASING_FUNCTION
+from datetime import datetime
 
 class ShopService:
 
@@ -42,3 +49,27 @@ class ShopService:
             pokemon_figures, 
             pokecoins_packs
             ]
+
+    async def buy_item_of_the_daily_shop(self, item_id: str, purchase_id: str, user: User):
+        purchase = await PurchaseRepository.search_purchase("purchase_id", purchase_id)
+        if purchase:
+            return purchase
+        
+        item = await ShopRepository.search_item("_id", id_converter(item_id))
+        if not item:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+
+        function = PURCHASING_FUNCTION[item["type"]](item, user)
+        if not function:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The item couldn't be purchased")
+            
+        purchase_data = {
+            "purchase_id": purchase_id,
+            "result": {"item_id": item_id, "currency": item["currency"]},
+            "user_id": id_converter(user.id),
+            "created_at": datetime.utcnow(),
+        }
+        insert_purchase = await PurchaseRepository.insert_purchase(purchase_data)
+        if not insert_purchase:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Insert Purchase Error")
+        return {"detail": "Item successfully purchased"}

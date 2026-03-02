@@ -4,7 +4,6 @@ from app.enums.currency_enum import Currency
 
 class PurchaseResult(BaseModel):
     item_id : str
-    user_id: str
     currency: Currency
 
 class Purchase(BaseModel):

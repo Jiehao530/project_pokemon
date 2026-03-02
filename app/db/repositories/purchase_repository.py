@@ -8,3 +8,8 @@ class PurchaseRepository:
     async def search_purchase(field: str, value):
         purchase = await purchase_collection.find_one({field: value})
         return Purchase(**purchase_converter(purchase)) if purchase else None
+    
+    @staticmethod
+    async def insert_purchase(data_purchase: dict):
+        insert = await purchase_collection.insert_one(data_purchase)
+        return insert.acknowledged
