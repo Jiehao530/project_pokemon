@@ -6,4 +6,4 @@ from motor.motor_asyncio import AsyncIOMotorClient
 load_dotenv()
 MONGO_CONNECTION = os.getenv("MONGO_URI")
 
-client = AsyncIOMotorClient(MONGO_CONNECTION)["pruebas_definitivas"]
+client = AsyncIOMotorClient(MONGO_CONNECTION)["project_pokemon"]
