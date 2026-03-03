@@ -1,8 +1,8 @@
 def purchase_result_converter(data) -> dict:
     return {
         "item_id" : str(data["item_id"]),
-        "status": data["status"],
-        "currency": data["currency"]
+        "currency": data["currency"],
+        "status": data["status"]
     }
 
 def purchase_converter(data) -> dict:

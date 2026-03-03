@@ -59,13 +59,13 @@ class ShopService:
         if not item:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
 
-        function = PURCHASING_FUNCTION[item["type"]](item, user)
+        function = await PURCHASING_FUNCTION[item["type"]](item, user)
         if not function:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The item couldn't be purchased")
             
         purchase_data = {
             "purchase_id": purchase_id,
-            "result": {"item_id": item_id, "currency": item["currency"]},
+            "result": {"item_id": item_id, "currency": item["currency"], "status": 200},
             "user_id": id_converter(user.id),
             "created_at": datetime.utcnow(),
         }
