@@ -44,3 +44,17 @@ class WedsocketService:
             await wedsocket.send_json({ExchangeType.ERROR.value: "Invalid Token"})
             await wedsocket.close()
             return
+        
+        user_id = user.id
+        if user_id == exchange_room["creator"]:
+            role = ExchangeRole.CREATOR.value
+        else:
+            if not exchange_room["participant"] is None:
+                wedsocket.send_json({ExchangeType.ERROR.value: "The room is full"})
+                wedsocket.close()
+                return
+            exchange_room["participant"] = user_id
+            role = ExchangeRole.PARTICIPANT.value
+        
+        connections: list = exchange_room["connections"]
+        connections.append(wedsocket)
