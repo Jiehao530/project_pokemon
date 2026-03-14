@@ -1,7 +1,7 @@
 from enum import Enum
 
 class ExchangeType(str, Enum):
-    INCOMING = "incoming_exchange"
+    PENDING = "pending_exchange"
     COMPLETED = "exchange_completed"
     CANCELLED = "exchange_cancelled"
     ERROR = "error"
